@@ -14,7 +14,6 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 // import MyCarousel from "../../components/carousel";
 import rebecca from "../../assets/rebecca.jpg";
-import Untitled from "../../assets/Untitled.jpg";
 
 const Login = () => {
   type IUserData = yup.InferType<typeof schema>;
