@@ -1,32 +1,28 @@
 import {
-  Container,
-  AbsoluteCenter,
   Button,
   Input,
-  FormControl,
   Stack,
   Box,
   Text,
-  Flex,
+  useToast
 } from "@chakra-ui/react";
+import { Image } from "@chakra-ui/react";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
-// import MyCarousel from "../../components/carousel";
 import rebecca from "../../assets/rebecca.jpg";
 
+import { DOCUMENT_REGEX } from "../../constants";
+import apiService from "../../services/api";
+
 const Login = () => {
+  const toast = useToast()
+
   type IUserData = yup.InferType<typeof schema>;
 
   const schema = yup.object({
-    name: yup
-      .string()
-      .max(64)
-      .required("Preencha o campo com o seu nome completo."),
-    cpf: yup
-      .string()
-      .email("")
-      .required("Preencha o campo com um email válido."),
+    name: yup.string().max(64).required("Preencha o campo com o seu nome completo."),
+    cpf: yup.string().matches(DOCUMENT_REGEX, "Preencha o campo com um CPF válido.").required("Preencha o campo com um CPF válido.").length(11)
   });
 
   const {
@@ -36,74 +32,95 @@ const Login = () => {
   } = useForm<IUserData>({
     resolver: yupResolver(schema),
   });
+  const loginSubmit = async (data: IUserData) => {
 
-  const onSubmit = (data: IUserData) => {
-    console.log("oi", data);
+    const { name, cpf } = data;
+  
+    const loginPromise = new Promise((resolve, reject) => {
+      apiService.post('/user/create', { name, cpf })
+        .then((response) => {
+          resolve(response.data); 
+        })
+        .catch((error) => {
+          
+          if (error.response && error.response.data) {
+            reject(new Error(error.response.data)); 
+          } else {
+            reject(new Error("Falha na confirmação. Tente novamente mais tarde"));
+          }
+        });
+    });
+  
+    toast.promise(loginPromise, {
+      success: { title: 'Confirmação concluída com sucesso', description: 'Te vejo lá 😊!' },
+      error: (error) => ({
+        title: 'Erro durante o procedimento',
+        description: error.message,
+      }),
+      loading: { title: 'Processando...', description: 'Aguarde' },
+    })
   };
-
+  
+  
   return (
-    <Container
-      backgroundColor={"#f05d9a"}
-      flexDirection={"column"}
-      width={"100vw"}
-      height={"100vh"}
-      p={0}
-      m={0}
-    >
-      <AbsoluteCenter
-        w={"auto"}
-        h={"auto"}
+
+      <Box
+      width="100%"
+      height="100vh"
+      minHeight="100vh"
+      overflowY="auto"
+      display="flex"
+        backgroundColor={"#f05d9a"}
         flexDirection={"column"}
         color="white"
       >
-        
-        <Flex>
-          <Box
-            style={{
-              backgroundImage: `url(${rebecca})`,
-              backgroundSize: "contain",
-              backgroundRepeat: "no-repeat",
-              backgroundPosition: "center",
-              // borderRadius: "8px",
-              height: "70vh",
-              width: "500px",
-             
-            }}
-          ></Box>
+        <Box flexDirection={"column"}>
+          <Image
+            boxShadow={"0 0 20px #fff"}
+            border={"5px solid #fff"}
+            mt={"50px"}
+            borderRadius={"8px"}
+            mb={"auto"}
+            ml={"auto"}
+            mr={"auto"}
+            w={400}
+            h={"auto"}
+            src={rebecca}
+            alt="Dan Abramov"
+          />
 
-          <Box m={'auto'} w={"650px"} h={"auto"} >
-            <Box w={"100%"} m={"auto"} >
-              <Stack textAlign={"center"}>
-              <Text fontWeight={600} fontSize={50} w={"100%"}>
-          Confirme sua presença até 28/04
-        </Text>
-                <Text  fontSize={"54px"}>
-                  Rebbeca
+          <Box m={"auto"} h={"auto"}>
+            <Stack textAlign={"center"}>
+              <Box m={"auto"}>
+                <Text fontWeight={600} fontSize={50} w={"100%"}>
+                  Confirme sua presença até 28/04
                 </Text>
-                <Text  fontSize={"54px"}>
-                  15 anos
-                </Text>
-              </Stack>
-            </Box>
+              </Box>
+              <Text fontSize={"54px"}>Rebbeca</Text>
+              <Text fontSize={"54px"}>15 anos</Text>
+            </Stack>
 
-            <Box w={'auto'}>
-              <FormControl
-                h={"auto"}
-                p={25}
-                m={"auto"}
-                backgroundColor={"#F6CED8"}
-                borderRadius={"8px"}
-                w={400}
-                onSubmit={handleSubmit(onSubmit)}
+            <Box m={'auto'} w={"360px"}>
+              <form
+                style={{
+                  height: "auto",
+                  padding: "25px",
+                  marginRight: "5%",
+                  marginLeft: "5%",
+                  backgroundColor: "#F6CED8",
+                  borderRadius: "8px",
+                  width: "90%",
+                }}
+                onSubmit={handleSubmit(loginSubmit)}
               >
                 <Input
                   backgroundColor={"#fff"}
                   borderRadius={6}
                   w={"100%"}
-                  h={50}
-                  mb={10}
+                  h={10}
+                  mb={2}
                   color={"#000"}
-                  p={10}
+                  p={5}
                   placeholder="Nome"
                   {...register("name")}
                 />
@@ -122,10 +139,12 @@ const Login = () => {
                   backgroundColor={"#fff"}
                   borderRadius={6}
                   w={"100%"}
-                  h={50}
+                  h={10}
                   color={"#000"}
-                  p={10}
-                  placeholder="CPF"
+                  p={5}
+                  mt={5}
+                  mb={2}
+                  placeholder="CPF (somente números)"
                   type="text"
                   {...register("cpf")}
                 />
@@ -151,20 +170,22 @@ const Login = () => {
                   fontSize={"16px"}
                   backgroundColor={"#B2E2D6"}
                   _hover={{ backgroundColor: "#D3B8E2" }}
+                  type="submit"
                 >
                   Confirmar
                 </Button>
-              </FormControl>
+              </form>
             </Box>
-            <Text fontSize={18} m={15} textAlign={"center"}>
-              Esse convite é individual e intransferível. Apenas convidados da
-              lista terão acesso ao evento.
-            </Text>
+            <Box m={"auto"} w={"70%"}>
+              <Text w={"100%"} fontSize={18} mt={15} textAlign={"center"}>
+                Essa confirmação é individual e intransferível. Apenas convidados da
+                lista confirmados terão acesso ao evento.
+              </Text>
+            </Box>
           </Box>
-        </Flex>
-      </AbsoluteCenter>
-      {/* <MyCarousel /> */}
-    </Container>
+        </Box>
+      </Box>
+  
   );
 };
 
