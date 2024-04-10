@@ -42,8 +42,8 @@ baseURL: this.endPoint,
      return response
    }
  }
- 
-const API_ENDPOINT = 'http://127.0.0.1:3000'
+ const API_ENDPOINT='rebeca-server-production.up.railway.app'
+//const API_ENDPOINT = 'http://127.0.0.1:3000'
 const apiService = new ApiService(API_ENDPOINT)
 
 export default apiService
