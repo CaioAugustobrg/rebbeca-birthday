@@ -22,7 +22,7 @@ const Login = () => {
 
   const schema = yup.object({
     name: yup.string().max(64).required("Preencha o campo com o seu nome completo."),
-    cpf: yup.string().matches(DOCUMENT_REGEX, "Preencha o campo com um CPF válido.").required("Preencha o campo com um CPF válido.").length(11)
+    cpf: yup.string().matches(DOCUMENT_REGEX, "Preencha o campo com um CPF válido.").required("Preencha o campo com um CPF válido.").length(11, 'O CPF tem 11 dígitos')
   });
 
   const {
@@ -78,7 +78,6 @@ const Login = () => {
           <Image
             boxShadow={"0 0 20px #fff"}
             border={"5px solid #fff"}
-            mt={"50px"}
             borderRadius={"8px"}
             mb={"auto"}
             ml={"auto"}
