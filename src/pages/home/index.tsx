@@ -83,7 +83,7 @@ const Login = () => {
             mb={"auto"}
             ml={"auto"}
             mr={"auto"}
-            w={400}
+            w={490}
             h={"auto"}
             src={rebecca}
             alt="Dan Abramov"
