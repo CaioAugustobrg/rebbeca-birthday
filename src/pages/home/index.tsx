@@ -112,6 +112,7 @@ const Login = () => {
                 }}
                 onSubmit={handleSubmit(loginSubmit)}
               >
+              <Text fontSize={20}>Insira seu nome completo</Text>
                 <Input
                   backgroundColor={"#fff"}
                   borderRadius={6}
@@ -134,6 +135,7 @@ const Login = () => {
                     {errors.name.message}
                   </p>
                 )}
+                 <Text fontSize={20}>Insira somente os digítos do seu CPF</Text>
                 <Input
                   backgroundColor={"#fff"}
                   borderRadius={6}
@@ -141,9 +143,9 @@ const Login = () => {
                   h={10}
                   color={"#000"}
                   p={5}
-                  mt={5}
+                  
                   mb={2}
-                  placeholder="CPF (somente números)"
+                  placeholder="CPF (somente digítos)"
                   type="text"
                   {...register("cpf")}
                 />
